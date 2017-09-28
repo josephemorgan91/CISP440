@@ -92,103 +92,161 @@ int Cardinality(set A)
 		mask <<= 1;
 	}
 
-	return 42;
+	return count;
 }
 
 void printPowerSet(set A)
 {
-}
+	int CardOfP = my_pow(2, Cardinality(A));
+	set setB = 1;
+	set subA = 0;
 
+	for (; setB < CardOfP; ++setB)
+	{
+		unsigned char Amask = 0x01;
+		unsigned char Bmask = 0x01;
+
+		for (; Amask > 0; Amask <<= 1)
+		{
+			if (Amask & A)
+			{
+				if (Bmask & setB)
+				{
+					subA |= Amask;
+				}
+				Bmask <<= 1;
+			}
+			// Amask shifts left
+		}
+		printSet(subA);
+		printf("\n");
+		subA = 0;
+	}
+}
 
 bool IsSubset(set ASubset, set ASet)
 {
 	return ((ASubset & ASet) == ASubset);
 }
 
-
 bool IsProperSubset(set ASubset, set ASet)
 {
 	return ((ASet != ASubset) && (ASubset != 0) && ((ASubset & ASet) == ASubset));
 }
 
-int main(void)
+void test_operations(set A, set B, set C)
 {
+	set R = 0;
 
-	set A = 0;
-
-	insert(A, "Bat");
-	insert(A, "Cat");
-	insert(A, "Chimp");
-	insert(A, "Snake");
-
-	printf("Set A: ");
-	printSet(A);
-	printf("\nCardinality: ");
-	printf("%d", Cardinality(A));
-
-	printf("\n\nPowerSet(A):\n");
-	printPowerSet(A);
-
-	set B = 0;
-	insert(B, "Chimp");
-	insert(B, "Fish");
-	insert(B, "Liger");
-
-	printf("\nSet B: ");
-	printSet(B);
-
-	set C = 0;
-	insert(C, "Chimp");
-	insert(C, "Fish");
-	insert(C, "Liger");
-	printf("\nSet C: ");
-	printSet(C);
-
-	printf("\n(A Union B) Inter ~C: ");
-	set D = Intersection(Union(A, B), ~C);
-	printSet(D);
-
-	if (IsSubset(B, C))
-		printf("\nB is a subset of C");
-	else
-		printf("\nB is NOT a subset of C");
-
-	if (IsProperSubset(B, C))
-		printf("\nB is a proper subset of C");
-	else
-		printf("\nB is NOT a proper subset of C");
-
+	printf("(A U B) ^ C: ");
+	R = Intersection(Union(A, B), C);
+	printSet(R);
 	printf("\n");
 
-/*
-OUTPUT OF ABOVE TESTING
+	printf("A U (B ^ C): ");
+	R = Union(A, Intersection(B, C));
+	printSet(R);
+	printf("\n");
 
-Set A: { Bat, Cat, Chimp, Snake }
-Cardinality: 4
+	printf("~(A ^ B): ");
+	R = Complement(Intersection(A, B));
+	printSet(R);
+	printf("\n");
 
-PowerSet(A):
-{  }
-{ Snake }
-{ Chimp }
-{ Chimp, Snake }
-{ Cat }
-{ Cat, Snake }
-{ Cat, Chimp }
-{ Cat, Chimp, Snake }
-{ Bat }
-{ Bat, Snake }
-{ Bat, Chimp }
-{ Bat, Chimp, Snake }
-{ Bat, Cat }
-{ Bat, Cat, Snake }
-{ Bat, Cat, Chimp }
-{ Bat, Cat, Chimp, Snake }
+	printf("(~A U ~B): ");
+	R = Union(Complement(A), Complement(B));
+	printSet(R);
+	printf("\n");
 
-Set B: { Chimp, Fish, Liger }
-Set C: { Chimp, Fish, Liger }
-(A Union B) Inter ~C: { Bat, Cat, Snake }
-B is a subset of C
-B is NOT a proper subset of C
+	printf("A - B: ");
+	R = Difference(A, B);
+	printSet(R);
+	printf("\n");
 
-*/
-	}
+	printf("Powerset A: \n");
+	printPowerSet(A);
+
+	printf("A is a proper subset of B: ");
+	IsProperSubset(A, B) ? printf("True\n") : printf("False\n");
+	
+	printf("A is a subset of B: ");
+	IsSubset(A, B) ? printf("True\n") : printf("False\n");
+
+	printf("(~C U A) ^ B: ");
+	R = Intersection(Union(Complement(C), A), B);
+	printSet(R);
+	printf("\n");
+
+	printf("(A ^ B) is a Proper Subset of B: ");
+	IsProperSubset(Intersection(A, B), B) ? printf("True\n") : printf("False\n");
+}
+
+int main(void)
+{
+	set A = 0, B = 0, C = 0;
+
+	// Fill A
+	insert(A, "Cat");
+	insert(A, "Dog");
+	insert(A, "Fish");
+
+	// Fill B
+	insert(B, "Cat");
+	insert(B, "Dog");
+	insert(B, "Liger");
+
+	// Fill C
+	insert(C, "Dog");
+	insert(C, "Liger");
+	insert(C, "Snake");
+	insert(C, "Turtle");
+
+	printf("************************************************\n");
+	printf("Set A: ");
+	printSet(A);
+	printf("\nSet B: ");
+	printSet(B);
+	printf("\nSet C: ");
+	printSet(C);
+	printf("\n************************************************\n");
+	printf("\n");
+
+	test_operations(A, B, C);
+
+	A = 0;
+	B = 0;
+	C = 0;
+
+	// Fill A
+	insert(A, "Bat");
+	insert(A, "Chimp");
+	insert(A, "Liger");
+	insert(A, "Snake");
+	insert(A, "Turtle");
+
+	// Fill B
+	insert(B, "Bat");
+	insert(B, "Cat");
+	insert(B, "Chimp");
+	insert(B, "Dog");
+	insert(B, "Fish");
+
+	// Fill C
+	insert(C, "Dog");
+	insert(C, "Fish");
+	insert(C, "Liger");
+	insert(C, "Snake");
+	insert(C, "Turtle");
+
+	printf("\n\n************************************************\n");
+	printf("Set A: ");
+	printSet(A);
+	printf("\nSet B: ");
+	printSet(B);
+	printf("\nSet C: ");
+	printSet(C);
+	printf("\n************************************************\n");
+	printf("\n");
+
+	test_operations(A, B, C);
+}
