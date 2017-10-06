@@ -5,7 +5,8 @@
 
 const int MAX = 40;
 
-struct Relation_matrix {
+struct Relation_matrix
+{
 	int matrix[MAX][MAX];
 	int size;
 
@@ -14,7 +15,8 @@ struct Relation_matrix {
 
 typedef struct Relation_matrix Relation_matrix;
 
-struct Relation {
+struct Relation
+{
 	private:
 		Relation_matrix* m_matrix_ptr;
 		int m_equiv_classes[MAX];
@@ -33,7 +35,10 @@ struct Relation {
 		void print_equiv_classes();
 };
 
-int main (int argc, char* argv[]) {
+typedef struct Relation Relation;
+
+int main (int argc, char* argv[])
+{
 	if (argc != 2) {
 		std::cout <<
 			"Usage: pass a number as a command line argument\n"
@@ -68,7 +73,8 @@ int main (int argc, char* argv[]) {
 	}
 }
 
-Relation_matrix::Relation_matrix() {
+Relation_matrix::Relation_matrix()
+{
 	for (int i = 0; i < MAX; ++i) {
 		for (int j = 0; j < MAX; ++j) {
 			matrix[i][j] = 0;
@@ -76,12 +82,14 @@ Relation_matrix::Relation_matrix() {
 	}
 }
 
-Relation::Relation() {
+Relation::Relation()
+{
 	for (int i = 0; i < MAX; ++i) m_equiv_classes[i] = 0;
 	m_matrix_ptr = new Relation_matrix();
 }
 
-Relation::Relation (std::string filename) {
+Relation::Relation (std::string filename)
+{
 	for (int i = 0; i < MAX; ++i) m_equiv_classes[i] = 0;
 	m_matrix_ptr = new Relation_matrix();
 
@@ -102,11 +110,13 @@ Relation::Relation (std::string filename) {
 	fin.close();
 }
 
-Relation::~Relation() {
+Relation::~Relation()
+{
 	delete m_matrix_ptr;
 }
 
-void Relation::print_matrix() {
+void Relation::print_matrix()
+{
 	int i, j;
 
 	for(i = 0; i < m_matrix_ptr->size; i++) {
@@ -116,7 +126,8 @@ void Relation::print_matrix() {
 	}
 }
 
-bool Relation::is_reflexive() {
+bool Relation::is_reflexive()
+{
 	bool result = true;
 
 	for (int i = 0; i < m_matrix_ptr->size; ++i) {
@@ -128,7 +139,8 @@ bool Relation::is_reflexive() {
 	return result;
 }
 
-bool Relation::is_symetric() {
+bool Relation::is_symetric()
+{
 	bool result = true;
 
 	for (int i = 0; i < m_matrix_ptr->size; ++i) {
@@ -143,7 +155,8 @@ bool Relation::is_symetric() {
 	return result;
 }
 
-Relation_matrix Relation::square_matrix() {
+Relation_matrix Relation::square_matrix()
+{
 	Relation_matrix new_rm;
 	new_rm.size = m_matrix_ptr->size;
 	int temp = 0;
@@ -161,7 +174,8 @@ Relation_matrix Relation::square_matrix() {
 	return new_rm;
 }
 
-bool Relation::is_transitive() {
+bool Relation::is_transitive()
+{
 	bool result = true;
 	Relation_matrix squared_matrix = square_matrix();
 
@@ -176,7 +190,8 @@ bool Relation::is_transitive() {
 	return result;
 }
 
-void Relation::find_equiv_classes() {
+void Relation::find_equiv_classes()
+{
 	m_equiv_classes[0] = 1;
 
 	for (int i = 1; i < m_matrix_ptr->size; ++i) {
@@ -187,7 +202,8 @@ void Relation::find_equiv_classes() {
 	}
 }
 
-void Relation::print_equiv_classes() {
+void Relation::print_equiv_classes()
+{
 	for (int i = 0; i < MAX; ++i) {
 		if (m_equiv_classes[i]) {
 			std::cout << "[" << i << "] : {";
