@@ -35,28 +35,35 @@ unsigned long hash_slinger (const char* str) {
 bool is_hash_table_big_enough_for_the_both_of_us (std::vector<std::string> str, int array_size) {
 	unsigned long hash_table[array_size];
 	bool result = true;
+	bool duped = true;
+	int magic_number = 32;
 
-	for (int i = 0; i < array_size; ++i) {
-		hash_table[i] = hash_slinger(str[i].c_str()) % 1024;
-		printf("%li ", hash_table[i]);
-	}
-	printf("\n");
+	while (duped == true) {
+		duped = false;
+		for (int i = 0; i < array_size; ++i) {
+			hash_table[i] = hash_slinger(str[i].c_str()) % magic_number;
+			printf("%li ", hash_table[i]);
+		}
+		printf("\n");
 
-	// Check for dupes
-	// No one likes getting duped
-	unsigned long hash_to_check;
-	for (int i = 0; i < array_size; ++i) {
-		hash_to_check = hash_table[i];
-		for (int j = 0; j < array_size; ++j) {
-			if (j != i) {
-				if (hash_to_check == hash_table[j]) {
-					result = false;
-					printf("Y'all been duped: %li\n", hash_table[j]);
-					break;
+		// Check for dupes
+		// No one likes getting duped
+		unsigned long hash_to_check;
+		for (int i = 0; i < array_size; ++i) {
+			hash_to_check = hash_table[i];
+			for (int j = 0; j < array_size; ++j) {
+				if (j != i) {
+					if (hash_to_check == hash_table[j]) {
+						result = false;
+						printf("Y'all been duped: %li\n", hash_table[j]);
+						duped = true;
+						magic_number++;
+						break;
+					}
 				}
 			}
 		}
 	}
-	
+	printf("Magic Number: %i\n", magic_number);
 	return result;
 }
