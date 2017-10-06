@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string.h>
 #include <fstream>
+#include <cstdlib>
 #define MAX 40
 
 using namespace std;
@@ -35,7 +36,7 @@ int IsSymt(int R[MAX][MAX]) {
 	bool result = true;
 
 	for (int i = 0; i < size; ++i) {
-		for (int j = 0; j < size; ++i) {
+		for (int j = 0; j < size; ++j) {
 			if (R[i][j] == 1 && R[j][i] != 1) {
 				result = false;
 			}
@@ -46,52 +47,81 @@ int IsSymt(int R[MAX][MAX]) {
 }
 
 void SquareMatrix(int R[MAX][MAX], int R2[MAX][MAX]) {
+	int temp = 0;
+
+	for (int i = 0; i < size; ++i) {
+		for (int j = 0; j < size; ++j) {
+			for (int k = 0; k < size; ++k) {
+				temp += R[i][k] * R[j][k];
+			}
+
+			R2[i][j] = temp;
+			temp = 0;
+		}
+	}
 }
 
 int IsTrans(int R[MAX][MAX], int R2[MAX][MAX]) {
+	bool result = true;
+
+	SquareMatrix(R, R2);
+
+	for (int i = 0; i < size; ++i) {
+		for (int j = 0; j < size; ++j) {
+			if (R[i][j] == 0 && R2[i][j] != 0) {
+				result = false;
+			}
+		}
+	}
+
+	return result;
 }
 
-/*
-	 Finds equivalence classes and elects representatives of each class.
-
-	 EC will contain a list of class representatives aka "captians" represented
-	 as an array of boolean flags.
-
-	 Each row in a matrix represents an equivalence class.  But there may be
-	 several duplicate rows.  Our task is to find the captian of each class,
-	 which will be the first member of the class.
-
-ALGORITHM:
-0 is always a captian
-
-For elements 1 thru N, assign each as a captian
-then, go to that elements row and look backwards for members less than this.
-If found, demote the captian.
-This works because captains are the first members of their class.  Think about it.
-*/
 void FindECs(int R[MAX][MAX], int EC[MAX]) {
+	for (int x = 0; x < MAX; ++x) EC[x] = 0;
+
+	EC[0] = 1;
+
+	for (int i = 1; i < size; ++i) {
+		EC[i] = 1;
+		for (int j = i - 1; j >= 0; --j) {
+			if (R[i][j]) EC[i] = 0;
+		}
+	}
 }
 
-
-/*
-	 Iterate thru the captains array.  For each captian, go to that row of
-	 the matrix and print the members of the class.
-	 */
 void printECs(int R[MAX][MAX], int EC[MAX]) {
+	for (int i = 0; i < MAX; ++i) {
+		if (EC[i]) {
+			cout << "[" << i << "] : {";
+			for (int j = 0; j < size; ++j) {
+				if (R[i][j]) cout << " " << j;
+			}
+			cout << " } \n";
+		}
+	}
+
+	cout << endl;
 }
 
 
-int main() {
-	char c;
+int main (int argc, char* argv[]) {
+	if (argc != 2) {
+		std::cout
+			<< "Usage: pass a number as a command line argument\n"
+			<< "corresponding to which input file you'd like to use.";
+		exit(1);
+	}
 
-	// open source file
-	ifstream fin( "R1.bin", ios_base::binary );
+	char c;
+	std::string start = "R";
+	std::string end = ".bin";
+	std::string filename = start + argv[1] + end;
+	ifstream fin(filename.c_str(), ios_base::binary);
 	if ( !fin ) { cerr << "Input file could not be opened\n"; exit(1); }
 
-	// get the matrix size
 	fin.read(&c, 1); size = c;
 
-	// fill the matrix from the file
 	int i, j;
 	for(i = 0; i < size; i++)
 		for(j = 0; j < size; j++)
@@ -100,11 +130,33 @@ int main() {
 			R[i][j] = c;
 		}
 
-	// close file
 	fin.close();
 
 	printMatrix(R);
+	cout << endl;
 
-	// more code....
+	bool is_EQR = true;
 
+	IsRefx(R) ?
+		(cout << "Is Reflexive\n") :
+		(is_EQR = false, cout << "Isn't Reflexive\n");
+	IsSymt(R) ?
+		(cout << "Is Symetrical\n") :
+		(is_EQR = false, cout << "Isn't Symetrical\n");
+
+	int trans_test[MAX][MAX] = {{0}};
+	IsTrans(R, trans_test) ?
+		(cout << "Is Transitive\n") :
+		(is_EQR = false, cout << "Isn't Transitive\n");
+
+	int temp[MAX][MAX] = {{0}};
+	SquareMatrix(R, temp);
+	cout << endl;
+	printMatrix(temp);
+
+	if (is_EQR) {
+		FindECs(R, EC);
+		cout << "\nEquiv. classes: \n";
+		printECs(R, EC);
+	}
 }
