@@ -104,7 +104,6 @@ void printECs(int R[MAX][MAX], int EC[MAX]) {
 	cout << endl;
 }
 
-
 int main (int argc, char* argv[]) {
 	if (argc != 2) {
 		std::cout
