@@ -40,6 +40,10 @@
 
 static const int MAX = 40;
 static const int MAX_FILENAME = 20;
+static int debug = 0;
+static int verbose = 0;
+static int g_size = 0;
+static int g_density = 0;
 
 struct Relation
 {
@@ -61,54 +65,52 @@ int is_transitive (Relation *r);
 void find_equiv_classes (Relation *r);
 void print_equiv_classes (Relation *r);
 Relation* gen_random_relation();
-void trans_vortex (Relation *r, int x, int y);
+int overlaps (int matrix[MAX][MAX], int x, int y);
 
 int main (int argc, char *argv[])
 {
 	srand ((unsigned)time(NULL));
-	char *filename;
-	filename = malloc(20 * sizeof(char));
-	strcpy(filename, "R1.bin");
-
-	if (argc == 3 && strcmp (argv[1], "-f") == 0) {
-		strcpy(filename, argv[2]);
-	} else if (argc == 3 && strcmp (argv[1], "-n") == 0) {
-		filename[1] = argv[2][0];
-	} else if (argc != 1) {
-		fprintf(stderr, "Usage: %s [-f filename] [-n file_number]\n", argv[0]);
-		fprintf(stderr, "    -f filename: Name of binary file containing relation\n");
-		fprintf(stderr, "    -n file_number: Number of file n following format Rn.bin\n");
-		exit(1);
+	for (int i = 1; i < argc; ++i) {
+		if (strcmp (argv[i], "-s") == 0) {
+			g_size = atoi(argv[i++ + 1]);
+		} else if (strcmp (argv[i], "-e") == 0) {
+			g_density = atoi (argv[i++ + 1]);
+		} else if (strcmp (argv[i], "-d") == 0) {
+			debug = 1;
+		} else if (strcmp (argv[i], "-v") == 0) {
+			verbose = 1;
+		} else if (argc != 1) {
+			fprintf(stderr, "Usage: %s [-s size] [-e density] [-v] [-d]\n", argv[0]);
+			fprintf(stderr, "    -s size: Size of the matrix to be randomly generated\n");
+			fprintf(stderr, "    -e density: Likelyhood that any given relation will exist. Higher means less likely\n");
+			fprintf(stderr, "    -v: enable verbose output\n");
+			fprintf(stderr, "    -d: enable debugging output\n");
+			exit(1);
+		}
 	}
 
 	Relation *test_rand = gen_random_relation();
-	// int found_transitive = is_transitive(test_rand);
-	// while (!found_transitive) {
-	//   free_relation(test_rand);
-	//   test_rand = gen_random_relation();
-	//   found_transitive = is_transitive(test_rand);
-	// }
 	print_matrix (test_rand);
-	print_relation (test_rand);
-	// find_equiv_classes (test_rand);
-	// print_equiv_classes (test_rand);
-
-	int is_EQR = 1;
-
-	is_reflexive(test_rand) ?
-		(printf("Is Reflexive\n")) :
-		(is_EQR = 0, printf("Isn't Reflexive\n"));
-	is_symetric(test_rand) ?
-		(printf("Is Symetrical\n")) :
-		(is_EQR = 0, printf("Isn't Symetrical\n"));
-
-	is_transitive(test_rand) ?
-		(printf("Is Transitive\n")) :
-		(is_EQR = 0, printf("Isn't Transitive\n"));
+	if (verbose) {
+		print_relation (test_rand);
+		find_equiv_classes (test_rand);
+		print_equiv_classes (test_rand);
+		int is_EQR = 1;
+		is_reflexive(test_rand) ?
+			(printf("Is Reflexive\n")) :
+			(is_EQR = 0, printf("Isn't Reflexive\n"));
+		is_symetric(test_rand) ?
+			(printf("Is Symetrical\n")) :
+			(is_EQR = 0, printf("Isn't Symetrical\n"));
+		is_transitive(test_rand) ?
+			(printf("Is Transitive\n")) :
+			(is_EQR = 0, printf("Isn't Transitive\n"));
+	}
 	return 0;
 }
 
-Relation* init_relation_blank (int size) {
+Relation* init_relation_blank (int size)
+{
 	// Create 2d array
 	Relation* new_relation = (Relation*)malloc(sizeof(Relation));
 	new_relation->matrix = malloc(MAX * sizeof(int*));
@@ -268,36 +270,69 @@ void print_equiv_classes (Relation* r)
 
 Relation* gen_random_relation()
 {
-	int size = (rand() % (MAX - 3)) + 4;
-	unsigned int density = (rand() % 5) + 2;
-	// printf("Size %i\nDensity %i\n", size, density); */
+	int size;
+	if (g_size)
+		size = g_size;
+	else
+		size = (rand() % (MAX - 3)) + 4;
+	unsigned int density;
+	if (g_density)
+		density = g_density;
+	else
+		density = (rand() % 4) + 5;
+	int eq_rel_found = 0;
+	int ec_matrix[MAX][MAX];
+	for (int i = 0; i < MAX; ++i)
+		for (int j = 0; j < MAX; ++j)
+			ec_matrix[i][j] = 0;
+	int ec_matrix_row= 0;
+	Relation* rand_relation = init_relation_blank (size);
 
-	// Relation* rand_relation = init_relation_blank (size);
-	// for (int i = 0; i < size; ++i)
-	//   rand_relation->matrix[i][i] = 1;
+	ec_matrix[0][0] = 1; // First, generate initial equivalence class.
+	for (int i = 0; i < size; ++i)
+		if (rand() % 10 >= density)
+			ec_matrix[0][i] = 1;
+	++ec_matrix_row;
 
-	// for (int i = 0; i < size; ++i)
-	//   for (int j = 0; j < size; ++j)
-	//     if (rand() % density == 0) {
-	//       rand_relation->matrix[i][j] = 1;
-	//       rand_relation->matrix[j][i] = 1;
-	//     }
-
+	for (int r = 0; r < size; ++r) {// For each row in ec_matrix...
+		if (debug)
+			printf("Attempting to write row %i\n", r);
+		for (int p = 0; !eq_rel_found && p <= r ; ++p) { // Scan ec_matrix...
+			if (debug)
+				printf("Scanning ec_matrix row %i\n", p);
+			if (ec_matrix[p][r]) { // To see if (r, r) is already part of an equivalence class. If it is...
+				if (debug)
+					printf("(x, %i) is is row %i of ec_matrix\n", r, p);
+				for (int c = 0; c < size; ++c) { // Copy the row from ec_matrix to rand_relation->matrix.
+					rand_relation->matrix[r][c] = ec_matrix[p][c];
+					if(debug) {
+						printf("Copying %i from ec_matrix[%i, %i]", ec_matrix[p][c], p, c);
+						printf(" to rand_relation->matrix[%i, %i]\n", r, c);
+					}
+				}
+				eq_rel_found = 1;
+			}
+		}
+		if (!eq_rel_found) { // If there isn't already an equiv. class cont (r, r)...
+			ec_matrix[ec_matrix_row][r] = 1; // Randomly generate one
+			for (int y = 1; y < size; ++y)
+				if (rand() % 10 >= density && !overlaps(ec_matrix, ec_matrix_row, y))
+					ec_matrix[ec_matrix_row][y] = 1;
+			for (int c = 0; c < size; ++c) { // And copy it into rand_relation->matrix
+				rand_relation->matrix[r][c] = ec_matrix[ec_matrix_row][c];
+			}
+			++ec_matrix_row;
+		}
+		eq_rel_found = 0;
+	}
 	return rand_relation;
 }
 
-void trans_vortex (Relation *r, int b, int c) {
-	// TODO
-	// 	1. Add node to matrix
-	// 	2. Check if node breaks transitivity
-	// 	3. If it does, call trans_vortex to add correcting node to matrix.
-
-	r->matrix[b][c] = 1; // (x, y) are the (b, c)
-	for (int a = 0; a < r->size; ++a) { // search possible (a, b)'s
-		if (r->matrix[a][b] && !r->matrix[a][c]) { // If there is an (a, b) with no (a, c)
-			trans_vortex (r, a, c); // Add that (a, c), but be sure to check it too for transitivity violations
-		}
-	}
-	// TODO:
-	// We still have to think about the symetry of nodes we're adding...
+int overlaps (int matrix[MAX][MAX], int x, int y)
+{
+	int result = 0;
+	for (int i = 0; i < x; ++i)
+		if (matrix[i][y])
+			result = 1;
+	return result;
 }
