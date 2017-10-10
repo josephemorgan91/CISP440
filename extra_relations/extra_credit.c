@@ -15,23 +15,55 @@
 // I included some functions mostly as they were written in the last homework
 // assignment for testing purposes.
 //
-// My algorithm for pseudo-randomly generating equivilence classes was:
-// 	1. Pseudo-randomly pick a matrix size between 2 and MAX.
-// 	2. Fill all [x][y] positions where x == y, to satisfy reflexivity.
-// 	3. Randomly fill positions throughout matrix.
-// 	4. If [x][y] is filled randomly, also fill [y][x].
-// 	5. Satisfy transitivity:
-// 		a. Iterate through matrix, if [x][y] is filled...
-// 		b. Iterate through [y][i]. If [y][i] is filled...
-// 		c. Fill [x][i] if it is not already filled.
-// 	6. Check for reflixivity, symetry and transitivity to make sure I didn't
-// 		goof up.
-// 	7. Find and print equiv. classes for completeness' sake.
+// My algorithm is a fairly hard for me to follow, so I can imagine that it may a
+// bit opaque to a 3rd party reader. The code could probably be cleaned up
+// significantly. The algorithm I used is:
+//
+//	1. Create an empty logical matrix for the relation to be generated.
+//
+//	2. Create an empty logical matrix to store equiv. classes to be generated.
+//
+// 	3. For each row r in the relation matrix,
+//
+// 		a. Check each of your equiv. classes for a row with r. For example,
+// 				if you're looking at matrix[3][x], you need to add matrix[3][3] to
+// 				that row. You don't want to add the 3 if it already exists in an
+// 				equiv. class, so you scan through all classes to make sure it's not
+// 				there.
+//
+// 			i. If an equiv. class exists with column r, copy that class to row r
+// 					of the relation matrix. Now you've got matrix[r][r] to satisfy
+// 					reflexivity, and you haven't broken transitivity by overlapping an
+// 					equiv. class.
+//
+// 			ii. If no equiv. class exists with r, randomly generate one, being
+// 					careful to make sure you do not ovelap any values already in
+// 					an equiv. class. Manually insert r value. Copy to relation matrix.
+//
+// Loop on through that bad boy, and you'll find yourself with a juicy
+// equivalence relation.
 //
 // I'm not sure if this is a particularly elegant solution, but I feel like
-// I was successful in avoiding a 'guess-and-check' method. Essentially, I'm
-// generating a random matrix and then modifying it to make it an equiv.
-// relation.
+// I was successful in avoiding a 'guess-and-check' method.
+//
+// I tested by compiling with gcc --std=c99.
+//
+// There are various command-line arguments that can be provided to influence
+// the execution or output of generator. See the manpage for details.
+// Just kidding.
+//
+// Use [-e density] to pick how densely the matrix will be populated. Should
+// probably keep it from 0 - 10, I'm not sure what will happen if you don't.
+//
+// Use [-s size] to pick how many columns x rows the matrix will be. Values
+// should be between 2 and 40.
+//
+// Use [-v] to make the generator output the set of relations in a list,
+// the equiv. classes in the relation, etc. By default, the only thing that
+// gets output is the matrix itself.
+//
+// With no arguments, the generator will pseudo-randomly pick a size and
+// density. Go with this option if you like to live on the edge.
 
 #include <stdlib.h>
 #include <time.h>
@@ -39,7 +71,6 @@
 #include <string.h>
 
 static const int MAX = 40;
-static const int MAX_FILENAME = 20;
 static int debug = 0;
 static int verbose = 0;
 static int g_size = 0;
@@ -288,22 +319,19 @@ Relation* gen_random_relation()
 	int ec_matrix_row= 0;
 	Relation* rand_relation = init_relation_blank (size);
 
-	ec_matrix[0][0] = 1; // First, generate initial equivalence class.
+	ec_matrix[0][0] = 1;
 	for (int i = 0; i < size; ++i)
 		if (rand() % 10 >= density)
 			ec_matrix[0][i] = 1;
 	++ec_matrix_row;
 
-	for (int r = 0; r < size; ++r) {// For each row in ec_matrix...
-		if (debug)
-			printf("Attempting to write row %i\n", r);
-		for (int p = 0; !eq_rel_found && p <= r ; ++p) { // Scan ec_matrix...
-			if (debug)
-				printf("Scanning ec_matrix row %i\n", p);
-			if (ec_matrix[p][r]) { // To see if (r, r) is already part of an equivalence class. If it is...
-				if (debug)
-					printf("(x, %i) is is row %i of ec_matrix\n", r, p);
-				for (int c = 0; c < size; ++c) { // Copy the row from ec_matrix to rand_relation->matrix.
+	for (int r = 0; r < size; ++r) {
+		if (debug) printf("Attempting to write row %i\n", r);
+		for (int p = 0; !eq_rel_found && p <= r ; ++p) {
+			if (debug) printf("Scanning ec_matrix row %i\n", p);
+			if (ec_matrix[p][r]) {
+				if (debug) printf("(x, %i) is is row %i of ec_matrix\n", r, p);
+				for (int c = 0; c < size; ++c) {
 					rand_relation->matrix[r][c] = ec_matrix[p][c];
 					if(debug) {
 						printf("Copying %i from ec_matrix[%i, %i]", ec_matrix[p][c], p, c);
@@ -313,12 +341,12 @@ Relation* gen_random_relation()
 				eq_rel_found = 1;
 			}
 		}
-		if (!eq_rel_found) { // If there isn't already an equiv. class cont (r, r)...
-			ec_matrix[ec_matrix_row][r] = 1; // Randomly generate one
+		if (!eq_rel_found) {
+			ec_matrix[ec_matrix_row][r] = 1;
 			for (int y = 1; y < size; ++y)
 				if (rand() % 10 >= density && !overlaps(ec_matrix, ec_matrix_row, y))
 					ec_matrix[ec_matrix_row][y] = 1;
-			for (int c = 0; c < size; ++c) { // And copy it into rand_relation->matrix
+			for (int c = 0; c < size; ++c) {
 				rand_relation->matrix[r][c] = ec_matrix[ec_matrix_row][c];
 			}
 			++ec_matrix_row;
