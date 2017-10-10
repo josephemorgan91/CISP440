@@ -65,6 +65,7 @@ void trans_vortex (Relation *r, int x, int y);
 
 int main (int argc, char *argv[])
 {
+	srand ((unsigned)time(NULL));
 	char *filename;
 	filename = malloc(20 * sizeof(char));
 	strcpy(filename, "R1.bin");
@@ -81,27 +82,29 @@ int main (int argc, char *argv[])
 	}
 
 	Relation *test_rand = gen_random_relation();
+	// int found_transitive = is_transitive(test_rand);
+	// while (!found_transitive) {
+	//   free_relation(test_rand);
+	//   test_rand = gen_random_relation();
+	//   found_transitive = is_transitive(test_rand);
+	// }
 	print_matrix (test_rand);
 	print_relation (test_rand);
+	// find_equiv_classes (test_rand);
+	// print_equiv_classes (test_rand);
 
-	// Relation* test_relation = init_relation_from_file (filename);
-	// print_matrix (test_relation);
-	// Relation* square_test = init_relation_blank(test_relation->size);
-	// square_matrix (test_relation, square_test);
-	// print_matrix (square_test);
+	int is_EQR = 1;
 
-	// int is_EQR = 1;
+	is_reflexive(test_rand) ?
+		(printf("Is Reflexive\n")) :
+		(is_EQR = 0, printf("Isn't Reflexive\n"));
+	is_symetric(test_rand) ?
+		(printf("Is Symetrical\n")) :
+		(is_EQR = 0, printf("Isn't Symetrical\n"));
 
-	// is_reflexive(test_relation) ?
-	//   (printf("Is Reflexive\n")) :
-	//   (is_EQR = 0, printf("Isn't Reflexive\n"));
-	// is_symetric(test_relation) ?
-	//   (printf("Is Symetrical\n")) :
-	//   (is_EQR = 0, printf("Isn't Symetrical\n"));
-
-	// is_transitive(test_relation) ?
-	//   (printf("Is Transitive\n")) :
-	//   (is_EQR = 0, printf("Isn't Transitive\n"));
+	is_transitive(test_rand) ?
+		(printf("Is Transitive\n")) :
+		(is_EQR = 0, printf("Isn't Transitive\n"));
 	return 0;
 }
 
@@ -163,7 +166,7 @@ void print_matrix (Relation *r)
 {
 	for (int i = 0; i < r->size; i++) {
 		for (int j = 0; j < r->size; j++) {
-			printf("%i", r->matrix[i][j]);
+			printf(" %i", r->matrix[i][j]);
 		}
 		printf("\n");
 	}
@@ -257,7 +260,7 @@ void print_equiv_classes (Relation* r)
 			for (int j = 0; j < r->size; ++j) {
 				if (r->matrix[i][j]) printf(" %i", j);
 			}
-			printf("} \n");
+			printf(" } \n");
 		}
 	}
 	printf("\n");
@@ -265,26 +268,20 @@ void print_equiv_classes (Relation* r)
 
 Relation* gen_random_relation()
 {
-	srand ((unsigned)time(NULL));
-	int size = (rand() % MAX) + 1;
-	unsigned int density = (rand() % 6) + 1;
+	int size = (rand() % (MAX - 3)) + 4;
+	unsigned int density = (rand() % 5) + 2;
+	// printf("Size %i\nDensity %i\n", size, density); */
 
-	Relation* rand_relation = init_relation_blank (size);
-	for (int i = 0; i < size; ++i)
-		rand_relation->matrix[i][i] = 1;
+	// Relation* rand_relation = init_relation_blank (size);
+	// for (int i = 0; i < size; ++i)
+	//   rand_relation->matrix[i][i] = 1;
 
-	for (int i = 0; i < size; ++i)
-		for (int j = 0; j < size; ++j)
-			if (rand() % density == 0) {
-				rand_relation->matrix[i][j] = 1;
-				for (int k = 0; k < size; ++k) {
-					if (rand_relation->matrix[k][i])
-						rand_relation->matrix[k][j] = 1; // TODO: But wait... this is adding a new (b, c),
-					// is there an (a, b) without an (a, c)?
-				}
-				rand_relation->matrix[j][i] = 1;
-			}
-
+	// for (int i = 0; i < size; ++i)
+	//   for (int j = 0; j < size; ++j)
+	//     if (rand() % density == 0) {
+	//       rand_relation->matrix[i][j] = 1;
+	//       rand_relation->matrix[j][i] = 1;
+	//     }
 
 	return rand_relation;
 }
