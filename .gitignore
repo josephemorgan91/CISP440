@@ -38,6 +38,10 @@ tags
 *.swp
 *.txt
 *.gz
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
 
 .config/gtk-2.0
 .config/menus

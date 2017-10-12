@@ -22,6 +22,10 @@
 //	2. Create an empty logical matrix to store equiv. classes to be generated.
 //
 // 	3. For each row r in the relation matrix,
+// 		**	TODO: It just ocurred to me that to make the generated matrix more
+// 			random, r shouldn't iterate from 0 to size, but be a random row until 
+// 			each row is processed... Equiv. classes seem to be weighted toward the
+// 			earlier rows. I probably won't get around to fixing that though...
 //
 // 		a. Check each of your equiv. classes for a row with r. For example,
 // 				if you're looking at matrix[3][x], you need to add matrix[3][3] to
