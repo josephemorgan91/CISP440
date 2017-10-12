@@ -1,0 +1,43 @@
+\documentclass[12pt,titlepage]{article}
+\usepackage[margin=.75in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{color}
+\setlength\parindent{0pt}
+\fancyhf{}
+\rfoot{Page \thepage}
+
+\definecolor{mygreen}{rgb}{0,0.3,0}
+\definecolor{mygray}{rgb}{0.2,0.2,0.2}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+
+\begin{document}
+\begin{titlepage}
+	\centering
+	\vfill
+	{\bfseries\Large
+		Joseph Morgan\\
+		\large
+		Homework 4\\
+		\vskip2cm
+		CISP440\\
+	}
+	\vfill
+	\vfill
+	\vfill
+\end{titlepage}
+\section{\textit{Source Code}}
+\lstinputlisting[
+breaklines=true,
+language=C++,
+basicstyle=\footnotesize,
+numbers=left,
+commentstyle=\color{mymauve},
+keywordstyle=\color{blue},
+numberstyle=\tiny\color{mygray},
+stringstyle=\color{mygreen},
+tabsize=2
+]{/home/joe/dev/cpp/CISP440/set_operations/sets.cpp}
+\section{\textit{Output}}
+\lstinputlisting[basicstyle=\footnotesize, breaklines=true]{/home/joe/dev/cpp/CISP440/set_operations/output.txt}
+\end{document}

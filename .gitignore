@@ -37,6 +37,7 @@ tags
 
 *.swp
 *.txt
+*.gz
 
 .config/gtk-2.0
 .config/menus

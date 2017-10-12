@@ -1,7 +1,9 @@
 #include <iostream>
-#include <string.h>
+#include <cstring>
+#include <string>
 #include <fstream>
 #include <cstdlib>
+
 #define MAX 40
 
 using namespace std;
@@ -10,7 +12,8 @@ int R[MAX][MAX];   // a boolean array indicating members of a relation
 int EC[MAX];       // a boolean array indicating representatives of equivalence classes
 int size;
 
-void printMatrix(int R[MAX][MAX]) {
+void printMatrix(int R[MAX][MAX])
+{
 	int i, j;
 
 	for(i = 0; i < size; i++) {
@@ -20,7 +23,8 @@ void printMatrix(int R[MAX][MAX]) {
 	}
 }
 
-int IsRefx(int R[MAX][MAX]) {
+int IsRefx(int R[MAX][MAX])
+{
 	bool result = true;
 
 	for (int i = 0; i < size; ++i) {
@@ -32,7 +36,8 @@ int IsRefx(int R[MAX][MAX]) {
 	return result;
 }
 
-int IsSymt(int R[MAX][MAX]) {
+int IsSymt(int R[MAX][MAX])
+{
 	bool result = true;
 
 	for (int i = 0; i < size; ++i) {
@@ -46,7 +51,8 @@ int IsSymt(int R[MAX][MAX]) {
 	return result;
 }
 
-void SquareMatrix(int R[MAX][MAX], int R2[MAX][MAX]) {
+void SquareMatrix(int R[MAX][MAX], int R2[MAX][MAX])
+{
 	int temp = 0;
 
 	for (int i = 0; i < size; ++i) {
@@ -61,7 +67,8 @@ void SquareMatrix(int R[MAX][MAX], int R2[MAX][MAX]) {
 	}
 }
 
-int IsTrans(int R[MAX][MAX], int R2[MAX][MAX]) {
+int IsTrans(int R[MAX][MAX], int R2[MAX][MAX])
+{
 	bool result = true;
 
 	SquareMatrix(R, R2);
@@ -77,7 +84,8 @@ int IsTrans(int R[MAX][MAX], int R2[MAX][MAX]) {
 	return result;
 }
 
-void FindECs(int R[MAX][MAX], int EC[MAX]) {
+void FindECs(int R[MAX][MAX], int EC[MAX])
+{
 	for (int x = 0; x < MAX; ++x) EC[x] = 0;
 
 	EC[0] = 1;
@@ -90,7 +98,8 @@ void FindECs(int R[MAX][MAX], int EC[MAX]) {
 	}
 }
 
-void printECs(int R[MAX][MAX], int EC[MAX]) {
+void printECs(int R[MAX][MAX], int EC[MAX])
+{
 	for (int i = 0; i < MAX; ++i) {
 		if (EC[i]) {
 			cout << "[" << i << "] : {";
@@ -104,58 +113,57 @@ void printECs(int R[MAX][MAX], int EC[MAX]) {
 	cout << endl;
 }
 
-int main (int argc, char* argv[]) {
-	if (argc != 2) {
-		std::cout
-			<< "Usage: pass a number as a command line argument\n"
-			<< "corresponding to which input file you'd like to use.";
-		exit(1);
-	}
-
+int main()
+{
 	char c;
-	std::string start = "R";
-	std::string end = ".bin";
-	std::string filename = start + argv[1] + end;
-	ifstream fin(filename.c_str(), ios_base::binary);
-	if ( !fin ) { cerr << "Input file could not be opened\n"; exit(1); }
+	char fnum[2];
+	char *start = "R";
+	char *end = ".bin";
+	for (int n = 1; n <= 7; ++n) {
+		char fname[7];
+		sprintf (fname, "%s%i%s", start, n, end);
+		ifstream fin (fname, ios_base::binary);
+		if ( !fin ) { cerr << "Input file could not be opened\n"; exit(1); }
 
-	fin.read(&c, 1); size = c;
+		fin.read(&c, 1); size = c;
 
-	int i, j;
-	for(i = 0; i < size; i++)
-		for(j = 0; j < size; j++)
-		{
-			fin.read(&c, 1);
-			R[i][j] = c;
+		int i, j;
+		for(i = 0; i < size; i++)
+			for(j = 0; j < size; j++)
+			{
+				fin.read(&c, 1);
+				R[i][j] = c;
+			}
+
+		fin.close();
+
+		printMatrix(R);
+		cout << endl;
+
+		bool is_EQR = true;
+
+		IsRefx(R) ?
+			(cout << "Is Reflexive\n") :
+			(is_EQR = false, cout << "Isn't Reflexive\n");
+		IsSymt(R) ?
+			(cout << "Is Symetrical\n") :
+			(is_EQR = false, cout << "Isn't Symetrical\n");
+
+		int temp[MAX][MAX] = {{0}};
+		std::cout << "The product is:\n";
+		SquareMatrix(R, temp);
+		cout << endl;
+		printMatrix(temp);
+		
+		int trans_test[MAX][MAX] = {{0}};
+		IsTrans(R, trans_test) ?
+			(cout << "Is Transitive\n") :
+			(is_EQR = false, cout << "Isn't Transitive\n");
+
+		if (is_EQR) {
+			FindECs(R, EC);
+			cout << "\nEquiv. classes: \n";
+			printECs(R, EC);
 		}
-
-	fin.close();
-
-	printMatrix(R);
-	cout << endl;
-
-	bool is_EQR = true;
-
-	IsRefx(R) ?
-		(cout << "Is Reflexive\n") :
-		(is_EQR = false, cout << "Isn't Reflexive\n");
-	IsSymt(R) ?
-		(cout << "Is Symetrical\n") :
-		(is_EQR = false, cout << "Isn't Symetrical\n");
-
-	int trans_test[MAX][MAX] = {{0}};
-	IsTrans(R, trans_test) ?
-		(cout << "Is Transitive\n") :
-		(is_EQR = false, cout << "Isn't Transitive\n");
-
-	int temp[MAX][MAX] = {{0}};
-	SquareMatrix(R, temp);
-	cout << endl;
-	printMatrix(temp);
-
-	if (is_EQR) {
-		FindECs(R, EC);
-		cout << "\nEquiv. classes: \n";
-		printECs(R, EC);
 	}
 }
