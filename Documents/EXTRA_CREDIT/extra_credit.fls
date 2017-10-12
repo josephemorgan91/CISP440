@@ -1,4 +1,4 @@
-PWD /home/joe/Documents/CISP440/EXTRA_CREDIT
+PWD /home/joe/dev/cpp/CISP440/Documents/EXTRA_CREDIT
 INPUT /usr/share/texmf-dist/web2c/texmf.cnf
 INPUT /var/lib/texmf/web2c/pdftex/pdflatex.fmt
 INPUT extra_credit.tex

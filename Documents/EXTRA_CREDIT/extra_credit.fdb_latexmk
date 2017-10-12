@@ -1,7 +1,7 @@
 # Fdb version 3
-["pdflatex"] 1507797567 "extra_credit.tex" "extra_credit.pdf" "extra_credit" 1507797567
+["pdflatex"] 1507798594 "extra_credit.tex" "extra_credit.pdf" "extra_credit" 1507798595
   "/home/joe/dev/cpp/CISP440/extra_relations/extra_credit.c" 1507797088 10055 6beeab2386e9ccba4ffd63c1f7b22ff2 ""
-  "/home/joe/dev/cpp/CISP440/extra_relations/output.txt" 1507796776 15469 43890402f285dda77e1c48922d35fc9d ""
+  "/home/joe/dev/cpp/CISP440/extra_relations/output.txt" 1507798594 18025 26d50be7afc176421df79ebd2d80de92 ""
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1501615455 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1501615461 1324 c910af8c371558dc20f2d7822f66fe64 ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmbxti10.tfm" 1501615461 1532 9162035f4e7176612125649e348e2195 ""
@@ -36,9 +36,9 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1501615481 32585 d82bbcf7626b7842c87671687479e852 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1506567387 2374995 888b02ebb58d1f1bdf5c344bfe2d5f8e ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1505806625 7735972 b88a6c4da29e66736d769f1b825c18d8 ""
-  "extra_credit.aux" 1507797567 424 b917038b45cca22055f63fc3e2ea2f67 ""
+  "extra_credit.aux" 1507798595 424 b917038b45cca22055f63fc3e2ea2f67 ""
   "extra_credit.tex" 1507797161 963 74b668d81f093be1827e437809d808a5 ""
   (generated)
-  "extra_credit.aux"
   "extra_credit.pdf"
+  "extra_credit.aux"
   "extra_credit.log"
