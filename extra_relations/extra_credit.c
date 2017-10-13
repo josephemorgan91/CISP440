@@ -15,15 +15,17 @@
 // I included some functions mostly as they were written in the last homework
 // assignment for testing purposes.
 //
-// My algorithm is a fairly hard for me to follow, so I can imagine that it may a
-// bit opaque to a 3rd party reader. The code could probably be cleaned up
-// significantly. The algorithm I used is:
+// The algorithm I used is:
 //
 //	1. Create an empty logical matrix for the relation to be generated.
 //
 //	2. Create an empty logical matrix to store equiv. classes to be generated.
 //
 // 	3. For each row r in the relation matrix,
+// 		**	TODO: It just ocurred to me that to make the generated matrix more
+// 			random, r shouldn't iterate from 0 to size, but be a random row until 
+// 			each row is processed... Equiv. classes seem to be weighted toward the
+// 			earlier rows. I probably won't get around to fixing that though...
 //
 // 		a. Check each of your equiv. classes for a row with r. For example,
 // 				if you're looking at matrix[3][x], you need to add matrix[3][3] to
@@ -40,13 +42,8 @@
 // 					careful to make sure you do not ovelap any values already in
 // 					an equiv. class. Manually insert r value. Copy to relation matrix.
 //
-// Loop on through that bad boy, and you'll find yourself with a juicy
-// equivalence relation.
-//
 // I'm not sure if this is a particularly elegant solution, but I feel like
 // I was successful in avoiding a 'guess-and-check' method.
-//
-// I tested by compiling with gcc --std=c99.
 //
 // There are various command-line arguments that can be provided to influence
 // the execution or output of generator. See the manpage for details.
@@ -111,22 +108,33 @@ int main (int argc, char *argv[])
 		} else if (strcmp (argv[i], "-v") == 0) {
 			verbose = 1;
 		} else if (argc != 1) {
-			fprintf(stderr, "Usage: %s [-s size] [-e density] [-v] [-d]\n", argv[0]);
-			fprintf(stderr, "    -s size: Size of the matrix to be randomly generated\n");
-			fprintf(stderr, "    -e density: Likelyhood that any given relation will exist. Higher means less likely\n");
-			fprintf(stderr, "    -v: enable verbose output\n");
-			fprintf(stderr, "    -d: enable debugging output\n");
+			fprintf
+				(stderr, "Usage: %s [-s size] [-e density] [-v] [-d] [-h]\n", argv[0]);
+			fprintf
+				(stderr, "    -s size: Size of the matrix to be randomly generated\n");
+			fprintf
+				(stderr, "    -e density: Likelyhood that any given relation will exist. Higher means less likely\n");
+			fprintf
+				(stderr, "    -v: enable verbose output\n");
+			fprintf
+				(stderr, "    -d: enable debugging output\n");
+			fprintf
+				(stderr, "    -h: print this message\n");
 			exit(1);
 		}
 	}
 
 	Relation *test_rand = gen_random_relation();
+	printf("Matrix: \n");
 	print_matrix (test_rand);
 	if (verbose) {
+		printf("\n\nSet of Relations: \n");
 		print_relation (test_rand);
+		printf("\n\nEquivalence Classes: \n");
 		find_equiv_classes (test_rand);
 		print_equiv_classes (test_rand);
 		int is_EQR = 1;
+		printf("\n");
 		is_reflexive(test_rand) ?
 			(printf("Is Reflexive\n")) :
 			(is_EQR = 0, printf("Isn't Reflexive\n"));
