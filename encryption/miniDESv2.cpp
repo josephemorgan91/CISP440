@@ -1,27 +1,12 @@
-/*
- * Mini Data Encryption Standard (DES)
- * Dan Ross        Oct 2015
- * Performs a simplified version of DES encryption using an 8-bit key
- * 1) Substitution - a discrete encryption function selected by the key
- * 2) Transposition - a simple byte swap in this implementation
- * 3) XOR - with the key
- * 4) Repeat 3 more times
- */
-
-#include <iostream>
 #include <iomanip>
 #include <string.h>
 #include <fstream>
 #include <stdlib.h>
 #include <time.h>
-using namespace std;
+#include <iostream>
 
-/* The Encryption Functions
- * f[0] = { (0,  1)(1, 18)...(255,117) }
- * f[1] = { (0,112)(1,103)...(255, 96) }
- * etc... */
 unsigned char f[4][256] = {
-	//    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
+	// 0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
 	{  1,  18, 121,  32, 127, 137, 132, 136, 144, 152, 159, 167, 175, 176, 178,   6, 149, 179, 186, 112,  59,  64,  12,   9,  81,  41,  29,  16,  10,   5,   0,  31,     //f[0]
 		76, 115, 165, 168,  74, 105,  48, 124, 172,  51, 182, 195,  63, 123,  38, 200, 205, 210,  28,  53, 212, 215, 217, 220, 109,  72,  99, 148, 158, 222, 229, 230,
 		57,  90, 104,  55,   8, 131, 169,  87, 180, 189, 213, 214, 194,  85, 133, 187,  73,  58,  66,  54, 141,  86,  15,  60,  82, 142,  47, 111, 157,  19,  36, 163,
@@ -59,22 +44,25 @@ unsigned char f[4][256] = {
 		168, 200, 222,  50,  85,  88, 184,  86,  55, 232, 122,   6,  10,  38,   4,  39, 106, 118,   2,  19,  47, 160,  59,  24,  11,  31,  72, 165, 188, 206,  28, 159}
 };
 
-
-/* The INVERSE Encryption Functions
- * Please fill this programmatically using fill_fi()
- * fi[0] = { (0,  30)(1,   0)...(255, 227) }
- * fi[1] = { (0, 100)(1,  24)...(255,  60) }
- * etc... */
-
 unsigned char fi[4][256];
 
-
-// fill and print the inverse function table
 void fill_fi()
 {
-	for (int i = 0; i < 4; ++i)
-		for (int j = 0; j < 256; ++j)
-			fi[i][(int)f[i][j]] = f[i][j];
+	unsigned char temp;
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 256; ++j) {
+			temp = f[i][j];
+			fi[i][temp] = j;
+			// std::cout << "fi[i][j] = " << (int)fi[i][j] << std::endl;
+		}
+	}
+
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 256; ++j) {
+			std::cout << (int)fi[i][j] << " ";
+		}
+		std::cout << std::endl;
+	}
 }
 
 // Swaps the high and low nibbles of a byte
@@ -91,10 +79,7 @@ unsigned char swapbytes(unsigned char cIn)
 	return cOut;
 }
 
-
-// Performs miniDES style encryption
-// You will need to write a decrypt function
-unsigned char encrypt(unsigned char w, unsigned char key)
+unsigned char encrypt (unsigned char w, unsigned char key)
 {
 	// intermediate values in the process
 	unsigned char x0, y0, z0;
@@ -130,54 +115,87 @@ unsigned char encrypt(unsigned char w, unsigned char key)
 	z3 = y3 ^ key;
 
 	return z3;
+}
 
+unsigned char decrypt (unsigned char w, unsigned char key)
+{
+	unsigned char o_char = 0;
+	unsigned char x0, y0, z0 = 0;
+	unsigned char x1, y1, z1 = 0;
+	unsigned char x2, y2, z2 = 0;
+	unsigned char x3, y3 = 0;
+	unsigned char p, q, r, s = 0;
+
+	p = (key & 0x03);
+	q = (key & 0x0C) >> 2;
+	r = (key & 0x30) >> 4;
+	s = (key & 0xC0) >> 6;
+
+	y3 = w ^ key;
+	x3 = swapbytes (y3);
+	z2 = fi[p][x3];
+
+	y2 = z2 ^ key;
+	x2 = swapbytes (y2);
+	z1 = fi[q][x2];
+
+	y1 = z1 ^ key;
+	x1 = swapbytes (y1);
+	z0 = fi[r][x1];
+
+	y0 = z0 ^ key;
+	x0 = swapbytes (y0);
+	o_char = fi[s][x0];
+
+	return o_char;
+}
+
+unsigned int encrypt_str (unsigned char *pt_str, unsigned char key, unsigned char *e_str)
+{
+	unsigned int i = 0;
+	while (pt_str[i] != '\0') {
+		e_str[i] = encrypt (pt_str[i], key);
+		++i;
+	}
+	return i;
+}
+
+void decrypt_str (unsigned char *e_str, unsigned char *pt_str, unsigned int len, unsigned char key)
+{
+	unsigned int i;
+	for (i = 0; i < len; ++i)
+		pt_str[i] = decrypt (e_str[i], key);
+
+	pt_str[++i] = '\0';
 }
 
 int main()
 {
-	char c;     // the byte to encrypt
-	char k;
+	char c;
+	char d;
+	fill_fi();
 
-	std::cout << "Enter a character to encrypt: \n";
-	std::cin >> c;
-	std::cout << "Please enter your encryption key: \n";
-	std::cin >> k;
+	std::ifstream fin("pPic.bmp", std::ios_base::binary);
+	if (!fin) { std::cerr << "Input file could not be opened\n"; exit(1);  }
 
-	unsigned char result = encrypt(c, k);
-	std::cout << "Your result was: " << (int)result << std::endl;
+	std::ofstream fout("ePic.bmp", std::ios_base::binary);
+	if (!fout) { std::cerr << "Output file could not be opened\n"; exit(1);  }
 
-	// // open source file
-	// ifstream fin("pPic.bmp", ios_base::binary);
-	// if (!fin) { cerr << "Input file could not be opened\n"; exit(1); }
+	std::ofstream dout("dPic.bmp", std::ios_base::binary);
+	if (!fout) { std::cerr << "Output file could not be opened\n"; exit(1);  }
 
-	// // open destination file
-	// ofstream fout("ePic.bmp", ios_base::binary);
-	// if (!fout) { cerr << "Output file could not be opened\n"; exit(1); }
+	while (!fin.eof())
+	{
+		fin.read(&c, 1);
+		if (!fin.eof())
+		{
+			c = encrypt(c, 42);
+			fout.write(&c, 1);
+			d = decrypt(c, 42);
+			dout.write(&d, 1);
+		}
+	}
 
-	// // read, encrypt, write
-	// while (!fin.eof())
-	// {
-	//   fin.read(&c, 1);
-	//   if (!fin.eof())
-	//   {
-	//     //cout << (int) w << endl;
-	//     c = encrypt(c, 42);             // Not the real key, you must brute force guess the real key
-	//     fout.write(&c, 1);
-	//   }
-	// }
-
-	// fin.close();
-	// fout.close();
-
-	/*
-	// handy code to build a filename string for iterative (brute force) crack
-	char filename[30];
-	char numstr[10];
-
-	strcpy(filename, "pPic");
-	itoa(key, numstr, 10);
-	strcat(filename, numstr);
-	strcat(filename, ".bmp");
-	*/
+	fin.close();
+	fout.close();
 }
-
