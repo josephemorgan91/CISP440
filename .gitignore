@@ -43,6 +43,8 @@ tags
 *.fls
 *.log
 
+*.bmp
+
 .config/gtk-2.0
 .config/menus
 .config/pulse

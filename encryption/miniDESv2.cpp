@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <iostream>
+#include <climits>
 
 unsigned char f[4][256] = {
 	// 0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
@@ -53,19 +54,17 @@ void fill_fi()
 		for (int j = 0; j < 256; ++j) {
 			temp = f[i][j];
 			fi[i][temp] = j;
-			// std::cout << "fi[i][j] = " << (int)fi[i][j] << std::endl;
 		}
 	}
 
-	for (int i = 0; i < 4; ++i) {
-		for (int j = 0; j < 256; ++j) {
-			std::cout << (int)fi[i][j] << " ";
-		}
-		std::cout << std::endl;
-	}
+	// for (int i = 0; i < 4; ++i) {
+	//   for (int j = 0; j < 256; ++j) {
+	//     std::cout << (int)fi[i][j] << " ";
+	//   }
+	//   std::cout << std::endl;
+	// }
 }
 
-// Swaps the high and low nibbles of a byte
 unsigned char swapbytes(unsigned char cIn)
 {
 	unsigned char lownibble, highnibble, cOut = 0;
@@ -81,23 +80,20 @@ unsigned char swapbytes(unsigned char cIn)
 
 unsigned char encrypt (unsigned char w, unsigned char key)
 {
-	// intermediate values in the process
 	unsigned char x0, y0, z0;
 	unsigned char x1, y1, z1;
 	unsigned char x2, y2, z2;
 	unsigned char x3, y3, z3;
 
-	// get base_4 digit values of key by parsing bits... every 2 bits is a base_4 digit
-	unsigned char p, q, r, s;     // key = s x 4^3  +  r x 4^2  +  q x 4^1  +  p x 4^0
+	unsigned char p, q, r, s;
 	p = (key & 0x03);
 	q = (key & 0x0C) >> 2;
 	r = (key & 0x30) >> 4;
 	s = (key & 0xC0) >> 6;
 
-	// Stage 0
-	x0 = f[s][w];         // substitution
-	y0 = swapbytes(x0);   // transposition
-	z0 = y0 ^ key;        // XOR
+	x0 = f[s][w];
+	y0 = swapbytes(x0);
+	z0 = y0 ^ key;
 
 	// Stage 1
 	x1 = f[r][z0];
@@ -150,52 +146,136 @@ unsigned char decrypt (unsigned char w, unsigned char key)
 	return o_char;
 }
 
-unsigned int encrypt_str (unsigned char *pt_str, unsigned char key, unsigned char *e_str)
-{
-	unsigned int i = 0;
-	while (pt_str[i] != '\0') {
-		e_str[i] = encrypt (pt_str[i], key);
-		++i;
-	}
-	return i;
-}
-
-void decrypt_str (unsigned char *e_str, unsigned char *pt_str, unsigned int len, unsigned char key)
-{
-	unsigned int i;
-	for (i = 0; i < len; ++i)
-		pt_str[i] = decrypt (e_str[i], key);
-
-	pt_str[++i] = '\0';
-}
-
-int main()
+void encrypt_file (std::ifstream &infile, std::ofstream &outfile, unsigned char key)
 {
 	char c;
-	char d;
-	fill_fi();
-
-	std::ifstream fin("pPic.bmp", std::ios_base::binary);
-	if (!fin) { std::cerr << "Input file could not be opened\n"; exit(1);  }
-
-	std::ofstream fout("ePic.bmp", std::ios_base::binary);
-	if (!fout) { std::cerr << "Output file could not be opened\n"; exit(1);  }
-
-	std::ofstream dout("dPic.bmp", std::ios_base::binary);
-	if (!fout) { std::cerr << "Output file could not be opened\n"; exit(1);  }
-
-	while (!fin.eof())
+	while (!infile.eof())
 	{
-		fin.read(&c, 1);
-		if (!fin.eof())
+		infile.read(&c, 1);
+		if (!infile.eof())
 		{
-			c = encrypt(c, 42);
-			fout.write(&c, 1);
-			d = decrypt(c, 42);
-			dout.write(&d, 1);
+			c = encrypt(c, key);
+			outfile.write(&c, 1);
 		}
 	}
 
-	fin.close();
-	fout.close();
+}
+
+void decrypt_file (std::ifstream &infile, std::ofstream &outfile, unsigned char key)
+{
+	char c;
+	while (!infile.eof())
+	{
+		infile.read(&c, 1);
+		if (!infile.eof())
+		{
+			c = decrypt(c, key);
+			outfile.write(&c, 1);
+		}
+	}
+}
+
+void decrypt_without_key (std::ifstream &infile, std::ofstream &outfile)
+{
+	short key;
+	char *c = (char*)malloc(2 * sizeof(char));
+	char *d = (char*)malloc(2 * sizeof(char));
+	infile.read (c, 2);
+	for (key = 0; key <= UCHAR_MAX; ++key) {
+		d[0] = decrypt (c[0], key);
+		d[1] = decrypt (c[1], key);
+		if (d[0] == 'B' && d[1] == 'M') {
+			std::cout << "Key found as: " << (char)key << std::endl;
+			break;
+		}
+	}
+	if (key > UCHAR_MAX) {
+		std::cout << "Key could not be found\n";
+		exit(1);
+	} else {
+		infile.seekg(0, infile.beg);
+		decrypt_file (infile, outfile, key);
+	}
+}
+
+int main (int argc, char* argv[])
+{
+	fill_fi();
+	char selection;
+	std::ifstream infile;
+	std::ofstream outfile;
+	std::string filename;
+	char key = 0;
+
+	if (argc == 3 && strcmp(argv[1], "-f") == 0) {
+		filename = argv[2];
+		infile.open(filename, std::ios_base::binary);
+		if (!infile)
+			std::cout << "Invalid filename!\n", exit(1);
+		outfile.open("cracked.bmp", std::ios_base::binary);
+		decrypt_without_key (infile, outfile);
+	} else {
+
+		std::cout
+			<< "*** miniDES encryption ***\n"
+			<< "	e) Encrypt file\n"
+			<< "	d) Decrypt file\n"
+			<< "	u) Decrypt file with unknown key"
+			<< "\nPlease make a selection: ";
+		std::cin >> selection;
+		std::cout << std::endl;
+
+		switch (selection) {
+			case ('e') :
+				std::cout
+					<< "You've selected 'encrypt file'\n"
+					<< "Please input the filename: ";
+				std::cin >> filename;
+				std::cout << std::endl << "Please input the encryption key: ";
+				std::cin >> key;
+				std::cout << std::endl;
+				infile.open (filename, std::ios_base::binary);
+				if (!infile)
+					std::cerr << "Input could not be opened\n";
+				outfile.open ("encrypted.bmp", std::ios_base::binary);
+				encrypt_file (infile, outfile, key);
+				infile.close();
+				outfile.close();
+				break;
+
+			case ('d') :
+				std::cout
+					<< "You've selected 'decrypt file'\n"
+					<< "Please input the filename: ";
+				std::cin >> filename;
+				std::cout << std::endl << "Please input the encryption key: ";
+				std::cin >> key;
+				std::cout << std::endl;
+				infile.open (filename, std::ios_base::binary);
+				if (!infile)
+					std::cerr << "Input could not be opened\n";
+				outfile.open ("decrypted.bmp", std::ios_base::binary);
+				decrypt_file (infile, outfile, key);
+				infile.close();
+				outfile.close();
+				break;
+
+			case ('u') :
+				std::cout
+					<< "You've selected 'decrypt file with unknown key'\n"
+					<< "Please input the filename: ";
+				std::cin >> filename;
+				infile.open (filename, std::ios_base::binary);
+				if (!infile)
+					std::cerr << "Input could not be opened\n";
+				outfile.open ("cracked.bmp", std::ios_base::binary);
+				decrypt_without_key (infile, outfile);
+				infile.close();
+				outfile.close();
+				break;
+
+			default:
+				std::cout << "Inavlid entry\n", exit(1);
+		}
+	}
 }
