@@ -1,0 +1,90 @@
+\documentclass[12pt,titlepage]{article}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\setlength\parindent{0pt}
+\fancyhf{}
+\rfoot{Page \thepage}
+
+\begin{document}
+\begin{titlepage}
+	\centering
+	\vfill
+	{\bfseries\Large
+		Joseph Morgan\\
+		\large
+		Homework 9\\
+		\vskip2cm
+		CISP440\\
+	}
+	\vfill
+	\vfill
+	\vfill
+\end{titlepage}
+\section*{\textit{Section 2.82}}
+\subsection*{\textit{Determine weather each relation is a function fom X=\{1, 2, 3, 4\} to Y = \{a, b, c, d\}}}
+\textbf{5.} 
+\[\{(1, b), (2, b), (3, b), (4, b)\}\]
+
+This relation is not a function, because there are multiple \textit{y} values which correspond to each \textit{x} value.
+\subsection*{\textit{Draw the graphs of the functions in exercises 6-9}}
+\textbf{8.} 
+\[ f(x) = \lceil x^2 \rceil \]
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=90mm]{./grid.png}
+\end{figure}
+\subsection*{\textit{Determine weather each function in Exercises 10-15 is one-to-one.
+		The domain of each function is the set of all real numbers. If the function is not
+		one-to-one, exhibit distinct numbers a and b with f(a) = f(b). Also, determine
+		weather f is onto the set of all real numbers. If f is not onto, exhibit a number y
+		for which f(x) $\neq$ y for all real x.}}
+\textbf{15.}
+\[ f(x)=\frac{x}{1+x^2} \]
+
+This function is one-to-one, which can be seen when the function is graphed. For each
+$x$ value, there is one unique $y$ value. This function is not onto the set of all real
+numbers. $f(x) \neq 10$ for all real $x$.
+
+\textbf{28.}
+
+Let $f$ and $g$ be functions from the positive real numbers to the positive real numbers
+defined by the equations
+
+\[ f(x) = \lfloor 2x \rfloor, \ \  g(x) = x^2 \]
+
+Find the compositions of $f \circ f$, $g \circ g$, $f \circ g$, and $g \circ f$.
+
+\[ f \circ f = f(f(x)) = f(\lfloor 2x \rfloor) = \lfloor 2(\lfloor 2x \rfloor) \rfloor\]
+\[ g \circ g = g(g(x)) = g(x^2) = ((x^2)^2) = x^4\]
+\[ f \circ g = f(g(x)) = f(x^2) = \lfloor 2x^2 \rfloor\]
+\[ g \circ f = g(f(x)) = g(\lfloor 2x \rfloor) = (\lfloor 2x \rfloor)^2\]
+\textbf{36.}
+
+How many functions are there from $\{1, 2\}$ into $\{a, b\}$? Which are one-to-one? Which are onto?
+
+Functions: 8
+
+\[ \{(1, a)\} \]
+\[ \{(2, a)\} \]
+\[ \{(1, b)\} \]
+\[ \{(2, b)\} \]
+\[ \{(1, a), (2, a)\} \]
+\[ \{(1, b), (2, b)\} \]
+\[ \{(1, a), (2, b)\} \]
+\[ \{(1, b), (2, a)\} \]
+
+One-to-one: 6
+
+\[ \{(1, a)\} \]
+\[ \{(2, a)\} \]
+\[ \{(1, b)\} \]
+\[ \{(2, b)\} \]
+\[ \{(1, a), (2, b)\} \]
+\[ \{(1, b), (2, a)\} \]
+
+Onto: 2
+
+\[ \{(1, a), (2, b)\} \]
+\[ \{(1, b), (2, a)\} \]
+\end{document}
