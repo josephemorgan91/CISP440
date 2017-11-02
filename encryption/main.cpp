@@ -1,5 +1,6 @@
 #include <string.h>
 #include <iostream>
+#include "inverse_table.h"
 #include "encryptor.h"
 #include "decryptor.h"
 

@@ -1,18 +1,8 @@
 #include <climits>
 #include <iostream>
+#include "inverse_table.h"
 #include "decryptor.h"
 #include "encryptor.h"
-
-void fill_fi()
-{
-	unsigned char temp;
-	for (int i = 0; i < 4; ++i) {
-		for (int j = 0; j < 256; ++j) {
-			temp = f[i][j];
-			fi[i][temp] = j;
-		}
-	}
-}
 
 unsigned char decrypt (unsigned char w, unsigned char key)
 {
