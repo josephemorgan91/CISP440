@@ -24,7 +24,7 @@ int main (int argc, char* argv[])
 			for (int i = 0; i < 4; ++i) {
 				std::cout << "{";
 				for (int j = 0; j < 256; ++j) {
-					std::cout << " " << fi[i][j];
+					std::cout << " " << (int)fi[i][j];
 				}
 				std::cout << " }" << std::endl;
 			}

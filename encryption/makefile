@@ -1,5 +1,5 @@
 CC = clang++
-CFLAGS = -std=c++11 -Wall -pedantic
+CFLAGS = -g -std=c++11 -Wall -pedantic
 
 jcrypt.bin: decryptor.o encryptor.o inverse_table.o main.o
 	$(CC) $(CFLAGS) decryptor.o encryptor.o main.o inverse_table.o -o jcrypt.bin
