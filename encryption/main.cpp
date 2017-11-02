@@ -13,13 +13,22 @@ int main (int argc, char* argv[])
 	std::string filename;
 	char key = 0;
 
-	if (argc == 3 && strcmp(argv[1], "-f") == 0) {
+	if (argc >= 3 && strcmp(argv[1], "-f") == 0) {
 		filename = argv[2];
 		infile.open(filename, std::ios_base::binary);
 		if (!infile)
 			std::cout << "Invalid filename!\n", exit(1);
 		outfile.open("cracked.bmp", std::ios_base::binary);
 		decrypt_without_key (infile, outfile);
+		if (argc == 4 && strcmp(argv[3], "-o") == 0) {
+			for (int i = 0; i < 4; ++i) {
+				std::cout << "{";
+				for (int j = 0; j < 256; ++j) {
+					std::cout << " " << fi[i][j];
+				}
+				std::cout << " }" << std::endl;
+			}
+		}
 	} else {
 
 		std::cout
