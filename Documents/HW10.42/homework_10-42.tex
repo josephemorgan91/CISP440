@@ -1,0 +1,46 @@
+\documentclass[12pt,titlepage]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\setlength\parindent{0pt}
+\fancyhf{}
+\rfoot{Page \thepage}
+
+\begin{document}
+\begin{titlepage}
+	\centering
+	\vfill
+	{\bfseries\Large
+		Joseph Morgan\\
+		\large
+		Homework 10.42\\
+		\vskip2cm
+		CISP440\\
+	}
+	\vfill
+	\vfill
+	\vfill
+\end{titlepage}
+\section{Source Code} 
+
+\lstinputlisting[
+breaklines=true,
+language=C++,
+basicstyle=\footnotesize,
+numbers=left,
+numberstyle=\tiny,
+tabsize=2
+]{/home/joe/dev/cpp/CISP440/logic/logical_equiv.cpp}
+
+\section{Output}
+\lstinputlisting[
+breaklines=true,
+language=C++,
+basicstyle=\footnotesize,
+numbers=left,
+numberstyle=\tiny,
+tabsize=2
+]{/home/joe/dev/cpp/CISP440/logic/output.txt}
+\end{document}
