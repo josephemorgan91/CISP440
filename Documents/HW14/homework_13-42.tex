@@ -1,0 +1,67 @@
+\documentclass[12pt,titlepage]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\setlength\parindent{0pt}
+\fancyhf{}
+\rfoot{Page \thepage}
+
+\begin{document}
+\begin{titlepage}
+	\centering
+	\vfill
+	{\bfseries\Large
+		Joseph Morgan\\
+		\large
+		Homework 14\\
+		\vskip2cm
+		CISP440\\
+	}
+	\vfill
+	\vfill
+	\vfill
+\end{titlepage}
+
+\section{Find regular expressions describing exactly each of the following
+strings (on A = \{a, b\} unless otherwise stated}
+
+\subsection*{A. All strings of a's of odd length.}
+a(aa)*
+\subsection*{B. All strings of length exactly 4.}
+(....)
+\subsection*{C. All strings of a, b, and c that begin with a or c and end with b.}
+[ac].*b
+\subsection*{D. All strings with at least two b's.}
+.*b+.*b+.*
+\subsection*{E. All strings with at least one a and at least one b.}
+\texttt{(.*(b+.*a+).*)|(.*(a+.*b+).*)}
+\subsection*{F. All strings that contain at least one double letter.}
+\texttt{.*a{2}.*|.*b{2}.*}
+\subsection*{G. All strings that do not contain a double letter.}
+\subsection*{H. All strings that contain the patterns aba or bab or both.}
+\texttt{.*aba.*|.*bab.*}
+\subsection*{I. All strings with an even number of a's}
+\verb!^[^a]*(a[^a]*a[^a]*)*$!
+\section{Describe in English, the strings that are defined by the following regular expressions:}
+\subsection*{A. \texttt{a*ba*ba*}}
+This would match with any string starting with zero or any number of a's, followed by one b,
+followed by zero or any number of a's, followed by one b, followed by zero or any number of a's.
+In other words,a string with exactly 2 b's and any number of a's.
+\subsection*{B. \texttt{(a+b)*(aa+bb)}}
+This regular expression has two capture groups. The first matches with one or more a's followed by a b, with that pattern repeating 0 or more times. The second capture group matches with at least 2 a's, followed by exactly 2 b's.
+\section{Indicate which of the following strings would match the regular expression above.}
+I should note that I can't find the meaning of $\lambda$ in the context of regexes anywhere online or in the textbook...
+B is the only string that matches the regular expression.
+\section{Circle the first letter in each string above that does not match the requirements of the
+regular expression.}
+baaabbaaa(b)\\
+baaabaaaab * matches\\
+baaa(a)abbaa\\
+aaabaa() needs another a to match.\\
+\section{What is the shortest possible string that WOULD NOT match the regular expression?}
+ab
+\section{...that would match the regex?}
+aaabaaa
+\end{document}
