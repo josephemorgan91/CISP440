@@ -1,0 +1,53 @@
+\documentclass[12pt,titlepage]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\setlength\parindent{0pt}
+\fancyhf{}
+\rfoot{Page \thepage}
+
+\begin{document}
+\begin{titlepage}
+	\centering
+	\vfill
+	{\bfseries\Large
+		Joseph Morgan\\
+		\large
+		Homework 13.42\\
+		\vskip2cm
+		CISP440\\
+	}
+	\vfill
+	\vfill
+	\vfill
+\end{titlepage}
+\section*{Source Code} 
+
+\lstinputlisting[
+breaklines=true,
+language=C++,
+basicstyle=\footnotesize,
+numbers=left,
+numberstyle=\tiny,
+tabsize=2
+]{/home/joe/dev/cpp/CISP440/sm/sm.cpp}
+
+\section*{Output for \textit{abab}}
+\lstinputlisting[
+breaklines=true,
+basicstyle=\footnotesize,
+numbers=left,
+numberstyle=\tiny,
+tabsize=2
+]{/home/joe/dev/cpp/CISP440/sm/output1.txt}
+\section*{Output for longer strings on monkeydata.txt}
+\lstinputlisting[
+breaklines=true,
+basicstyle=\footnotesize,
+numbers=left,
+numberstyle=\tiny,
+tabsize=2
+]{/home/joe/dev/cpp/CISP440/sm/monkey_output.txt}
+\end{document}
