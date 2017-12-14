@@ -1,0 +1,151 @@
+\documentclass[12pt,titlepage]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\setlength\parindent{0pt}
+\fancyhf{}
+\rfoot{Page \thepage}
+
+\begin{document}
+\begin{titlepage}
+	\centering
+	\vfill
+	{\bfseries\Large
+		Joseph Morgan\\
+		\large
+		Homework 15\\
+		\vskip2cm
+		CISP440\\
+	}
+	\vfill
+	\vfill
+	\vfill
+\end{titlepage}
+\section*{Section 10.3}
+\subsection*{\textit{In Exercises 1-6, determine whether the givin grammar is
+context-sensitive, context-free, regular or nonoe of these. Give all
+characterizations that apply.}}
+\subsection*{2. $T = \{a, b, c\}, N = \{\sigma, A, B\}$, with productions}
+\begin{multicols}{3}
+	$\sigma \rightarrow b\sigma$,\\
+	$\sigma \rightarrow aA$,\\
+	\columnbreak\\
+	$AB \rightarrow BA$,\\
+	$A \rightarrow bA$,\\
+	\columnbreak\\
+	$A \rightarrow a$,\\
+	$\sigma \rightarrow b$,\\
+\end{multicols}
+\subsection*{and $\sigma$ as a starting point.}
+This grammar is context context-sensitive, as evidenced by the production that
+has more than one symbol on the left-hand-side.
+\subsection*{3. $T = \{a, b\}, N = \{\sigma, A, B\}$, with productions}
+\begin{multicols}{3}
+	\sigma \rightarrow A,\\
+	\sigma \rightarrow AAB,\\
+	Aa \rightarrow ABa,
+	\columnbreak\\
+	A \rightarrow aa,\\
+	Bb \rightarrow ABb,
+	\columnbreak\\
+	AB \rightarrow ABB,\\
+	B \rightarrow b
+\end{multicols}
+\subsection*{and $\sigma$ as a starting point.}
+This grammar is also context-sensitive, because of the $Bb \rightarrow ABb$,
+$Aa \rightarrow ABa$ and $AB \rightarrow ABB$ productions.
+\subsection*{\textit{In Exercises 7-11, show that the given string $\alpha$ is in
+L(G) for the given grammer G by giving a definition of $\alpha$}}
+\subsection*{8. \textit{abab}, Exercise 2}
+$\sigma \rightarrow AB$\\
+$AB \rightarrow aAB$\\
+$aAB \rightarrow aABb$\\
+$aABb \rightarrow aBAb$\\
+$aBAb \rightarrow abAb$\\
+$abAb \rightarrow abab$\\
+\subsection*{11. \textit{abaabbabba}, Exercise 5}
+$<S> \rightarrow a<A> \rightarrow ab<B> \rightarrow aba<S> \rightarrow
+abaa<A> \rightarrow abaab<B>\\ \rightarrow abaabb<A> \rightarrow abaabba<S>
+\rightarrow abaabbab<S> \rightarrow abaabbabb<S> \rightarrow abaabbabba$
+\subsection*{12. Write the grammars of Examples 10.3.4 and 10.3.9 and Exercises 1-4 and 6 in BNF}
+\bf{\textit{10.3.4:}}\\ 
+$<\sigma> ::= b<\sigma>|a<S>\\
+<S> ::= b<S> | b$\\
+\bf{\textit{10.3.9:}}\\
+$<\sigma> ::= a<A><B>|a<B>\\
+<A> ::= a<A><C>|a<C>\\
+<B> ::= <D>c\\
+<D> ::= b\\
+<C><D> ::= <C><E>\\
+<C><E> ::= <D><E>\\
+<D><E> ::= <D><C>\\
+<C>c ::= <D>cc\\$
+\bf{\textit{Exercise 1}}\\
+$
+<\sigma>::=b<\sigma>|a<A>|b\\
+<A>::=b<A>|a<\sigma>|a\\
+$
+\bf{\textit{Exercise 2}}\\
+$
+<\sigma>::=<A><B>|a\\
+<A><B>::=<B><A>\\
+<A>::=a\sigma|b<A>|a\\
+$
+\bf{\textit{Exercise 3}}\\
+$
+<\sigma> ::= <A>|<A><A><B>\\
+<A>a::=<A><B>a\\
+<A>::=aa\\
+<B>b::=<A><B>b\\
+<A><B>::=<A><B><B>\\
+<B>::=b\\
+$
+\bf{\textit{Exercise 4}}\\
+$
+<\sigma>::=<B><A><B>|<A><B><A>\\
+<A>::=<A><B>|a<A>|ab\\
+<B>::=<B><A>|b\\
+$
+\bf{\textit{Exercise 6}}\\
+$
+<\sigma>::=<A><A>\sigma\\
+<A><A>::=<B>\\
+<B>::=b<B>\\
+<A>::=a\\
+$
+\subsection*{\textit{In Exercises 15-24, write a grammar that generates the
+strings having the givin property.}}
+\subsection*{16. Strings over $\{a, b\}$ starting with $a$.}
+$T = \{a, b\}, N = \{\sigma, A, B\}\\
+<\sigma>::=<A><B>|<B>\\
+<A>::=a|b\\
+<B>::=ab\\
+$
+\subsection*{17. Strings over $\{a, b\}$ containing $a$.}
+$T = \{a, b\}, N = \{\sigma, A, B, C\}\\
+<\sigma>::=<\sigma><C>|<C><\sigma>\\
+<A>::=a|b\\
+<B>::=ab\\
+<C>::=<A><B>|<B><A>
+$
+\subsection*{19. Integers with no leading 0's.}
+$T = \{0,1,2,3,4,5,6,7,8,9\}, N = \{\sigma, NONZERO, INT\}\\
+<\sigma>::=<NONZERO>|<NONZERO><INT>|0\\
+<NONZERO>::=1,2,3,4,5,6,7,8,9\\
+<INT>::=0,1,2,3,4,5,6,7,8,9\\
+$
+\subsection*{21. Exponential numbers.}
+$T = \{0-9, ., E, -, +\}, N = \{\sigma, I, B, S\}\\
+<\sigma>::=0|<B>|<B>E<I>\\
+<I>::=<S>0-9|<S><I>0-9\\
+<B>::=<I>|<I>.<I>|\\
+<S>::=+|-|\lambda\\
+$
+\subsection*{28}
+Yes, any string generated would have equal numbers of a's and b's. You can tell
+because the only productions each add one a and one b, just in different places
+in the string.
+\end{document}
