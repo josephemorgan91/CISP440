@@ -23,7 +23,7 @@
 //
 // 	3. For each row r in the relation matrix,
 // 		**	TODO: It just ocurred to me that to make the generated matrix more
-// 			random, r shouldn't iterate from 0 to size, but be a random row until 
+// 			random, r shouldn't iterate from 0 to size, but be a random row until
 // 			each row is processed... Equiv. classes seem to be weighted toward the
 // 			earlier rows. I probably won't get around to fixing that though...
 //
